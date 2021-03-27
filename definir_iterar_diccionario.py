@@ -18,17 +18,18 @@ while isOk==False:
     print('Ingresa el nombre que deseas escoger')
     nombre = input()
     my_list.append(nombre)
-    print('Oprima 0 si desea escoger más repuestos, o cualquier número si desea salir')
+    print('Oprima 0 si desea escoger más repuestos de la lista, o cualquier número si desea salir')
     a = int(input())
     if a > 0:
         isOk = True
     
 pago_total = 0
+print(my_list)
 for key,value in repuestos.items():
+    print(key)
     if key in my_list:
-        pago_total:pago_total+value
+        pago_total=pago_total+value
 
 
 print('El valor total a pagar es:'+str(pago_total))
 
-#ESTE CODIGO ME TOCA ARREGLARLO ME ESTA DANDO CERO
