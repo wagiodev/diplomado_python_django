@@ -32,11 +32,5 @@ class StudentManager():
     def getCalificationsByGroupStudent(self,id_group,id_student):
         query = Query()
         return query.getCalificationsByGroupStudent(id_group,id_student)
-""" student = Query()
-print(student.showByField('groups','id_teacher','1')) """
-# student.showByDocument('students','document','1234')
-""" rows= student.showAll('students')
-for row in rows:
-   print(row['name_student']) """
-# student.Add(teachers=None,document='5555',name_teacher='Yorley Candela')
+
 

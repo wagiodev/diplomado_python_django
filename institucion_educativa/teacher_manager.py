@@ -37,12 +37,5 @@ class TeacherManager():
         query = Query()
         return query.Add(califications=None,id_group=id_group,id_student=id_student,value=value)
 
-""" student = Query()
-print(student.showByField('groups','id_teacher','1')) """
-# student.showByDocument('students','document','1234')
-# student = Query()
-# rows= student.showAll('asignatures')
-# for row in rows:
-#    print(row['name_asignature'])
-# student.Add(teachers=None,document='5555',name_teacher='Yorley Candela')
+
 

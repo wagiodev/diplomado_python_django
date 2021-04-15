@@ -63,8 +63,16 @@ data = populate_data()
 venta = []
 
 
+def prevet_error(f):
+    def wrapper(*args, **kwargs):
+        try:
+          f(*args, **kwargs)
+        except: 
+            print('Se presentó un error vuelve a correr el programa')
+    return wrapper
 
 
+@prevet_error
 def inicio():
     '''
     Esta función se encarga de dar la bienvenida y seleccionar entre realizar una venta, 
@@ -135,6 +143,8 @@ def revisarInventario():
         sentence += '{} ref: {} -> cantidad:{}\n'.format(producto.nombre,producto.referencia,producto.cantidad_inventario)
     print(sentence)
     inicio()
+
+
 inicio()
 
 
