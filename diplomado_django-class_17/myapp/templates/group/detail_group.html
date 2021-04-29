@@ -1,0 +1,28 @@
+
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}
+{{ title }}
+{% endblock %}
+
+
+{% block content %}
+
+    <h1>
+        {{ group.title }}
+    </h1>
+    <p>
+        {{ group.description }}
+    </p>
+
+    <h2>
+        Lista de Estudiantes que pertenecen al grupo:
+    </h2>
+
+    {% include 'student/iter_student.html' %}
+
+
+
+{% endblock %}

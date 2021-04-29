@@ -1,0 +1,34 @@
+
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}
+{{ title }}
+{% endblock %}
+
+
+{% block content %}
+
+    <h1>
+        {{ student.first_name }}  {{ student.last_name }}
+    </h1>
+
+    <h2>
+        Lista de Grupos a los que pertenece este estudiante:
+    </h2>
+
+
+<ol>
+
+</ol>
+          {% for group in groups %}
+            <li>
+                    <a href="{% url 'get_group' group.id %}">
+                    {{ group.title }}
+                  </a>
+            </li>
+          {% endfor %}
+
+
+{% endblock %}

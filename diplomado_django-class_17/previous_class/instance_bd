@@ -1,0 +1,6 @@
+docker run -d --name db1 \
+  -e POSTGRES_PASSWORD=pass \
+  -p 5431:5432 \
+  -v $(pwd)/:/home/ \
+  -v $(pwd)/../postgres-data:/var/lib/postgresql/data \
+  postgres:12

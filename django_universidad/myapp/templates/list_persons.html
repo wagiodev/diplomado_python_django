@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}
+
+{{title}}   
+{% endblock %} 
+
+{% load static %}
+
+{% block content %}
+<h1>EJERCICIO EN CLASE</h1>
+    <table>
+        <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">First Name</th>
+              <th scope="col">Last Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for person in  persons %}  
+            <tr>
+              <th scope="row">{{ person.id }}</th>
+              <td>{{ person.first_name }}</td>
+              <td>{{ person.last_name }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+  
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+<!--Este extends trae el base.html-->
+{% block title %}
+
+{{title}}    
+{% endblock %} 
+
+{% load static %}
+
+{% block content %}
+<h1>EJERCICIO EN CLASE</h1>
+    <table>
+        <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">First Name</th>
+              <th scope="col">Last Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for teacher in teachers %}  
+            <tr>
+              <th scope="row">{{teacher.id }}</th>
+              <td>{{teacher.first_name }}</td>
+              <td>{{teacher.last_name }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+  
+{% endblock %}

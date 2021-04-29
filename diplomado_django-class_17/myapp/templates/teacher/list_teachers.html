@@ -1,0 +1,16 @@
+
+{% extends "base.html" %}
+
+{% block title %}
+{{ title }}
+{% endblock %}
+
+{% load static %}
+
+{% block content %}
+<a class="btn btn-primary btn-lg" href="{% url 'new_teacher' %}" role="button">Add Teacher</a>
+
+{% include 'teacher/iter_teacher.html' %}
+
+
+{% endblock %}

@@ -1,0 +1,14 @@
+
+<table>
+    <tr>
+      <th>Nombre</th>
+      <th>Appellido</th>
+    </tr>
+
+      {% for person in persons %}
+          <tr>
+            <td>{{ person.first_name }}</td>
+            <td>{{ person.last_name }}</td>
+          </tr>
+      {% endfor %}
+</table>
