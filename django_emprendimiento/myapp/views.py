@@ -26,8 +26,9 @@ def register(request):
             user = User.objects.create(
                 phone_number=cellphone
             )
+        
             user.set_password(password)
-            user.save
+            user.save()
             role_object = Role.objects.get(id=rol)
             user.roles.add(role_object)
             logger.debug(rol)
@@ -49,7 +50,7 @@ def login(request):
             user = authenticate(phone_number=cellphone, password=password)
             if user:
                 auth_login(request, user)
-                return redirect('client')
+                return redirect('cms')
         # if rol == '1':
         #     person = Client.objects.filter(cellphone=cellphone).first()
         #     appliances = person.appliance_set.all()
@@ -78,6 +79,21 @@ def client(request):
 
 def repairman(request):
     return render(request,'repairman.html')
+def cms(request):
+    user = request.user
+    if has_role(user, 'Client'):
+        return redirect('client')
+    elif has_role(user,'Repairman'):
+        return redirect('repairman')
+    return render(request,'register.html')
+
+def has_role(user, names):
+    role_names = names.split(',')
+    if hasattr(user, 'roles'):
+        if user.roles.filter(name__in=role_names).exists():
+            return True
+    return False
+    
 
 
 
