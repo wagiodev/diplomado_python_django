@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
-from .models import Client, Repairman, User, Role
-from .forms import RegisterForm, LoginForm
+from .models import Client, Repairman, User, Role, Appliance, Service
+from .forms import RegisterForm, LoginForm, ApplianceForm, ServiceForm
 # Create your views here.
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
@@ -15,14 +15,16 @@ ROL_CHOICES =(
 def register(request):
     
     form = RegisterForm(rol_choices=ROL_CHOICES)
+    msj= 'Accede a los servicios de Tecnimastercol.'
     if request.method == 'POST':
         form = RegisterForm(request.POST,rol_choices=ROL_CHOICES)
         if form.is_valid():
-            name= form.cleaned_data['name']
-            cellphone= form.cleaned_data['cellphone']
-            address= form.cleaned_data['address']
-            password = form.cleaned_data['password']
-            rol = form.cleaned_data['rol']
+            
+            name= request.POST.get('name')
+            cellphone= request.POST.get('cellphone')
+            address= request.POST.get('address')
+            password = request.POST.get('password')
+            rol = request.POST.get('rol')
             user = User.objects.create(
                 phone_number=cellphone
             )
@@ -37,7 +39,13 @@ def register(request):
             else:
                 Repairman(name=name,cellphone=cellphone,address=address,user=user).save()
             return redirect('login')
-    return render(request,'register.html', {'form': form})
+        else:
+            msj = 'Este número de celular ya existe en nuestro sistema'
+    context = {
+        'msj': msj,
+        'form': form
+    }    
+    return render(request,'sesion/register.html', context)
 
 def login(request):
     form = LoginForm()
@@ -70,22 +78,109 @@ def login(request):
         cliente = Client.objects.filter(user=user)
         Service(,,id_client=cliente) """
         return render(request, redic, context)
-    return render(request,'login.html', {'form': form})
+    return render(request,'sesion/login.html', {'form': form})
 
 
-def client(request):
-    
-    return render(request,'client.html')
 
-def repairman(request):
     return render(request,'repairman.html')
+
+@login_required(login_url='/service/login')
 def cms(request):
     user = request.user
+    appliances = None
+    person = None
+    services= None
+    appliances = None
     if has_role(user, 'Client'):
-        return redirect('client')
+        person = Client.objects.filter(user_id=user).first()
+        services = Service.objects.filter(id_client=person)
+        appliances = Appliance.objects.filter(id_client=person)
     elif has_role(user,'Repairman'):
-        return redirect('repairman')
-    return render(request,'register.html')
+        return redirect('cms_repairman')
+    context = {
+        'person': person,
+        'services':services,
+        'appliances':appliances
+    }
+    return render(request,'cms/cms.html',context)
+
+@login_required(login_url='/service/login')
+def cms_repairman(request):
+    user = request.user
+    appliances = None
+    person = None
+    services= None
+    person = Repairman.objects.filter(user_id=user).first()
+    services = Service.objects.filter(id_repairman=person)
+    context = {
+        'person': person,
+        'services':services,
+    }
+    return render(request,'cms/cms_repairman.html',context)
+
+@login_required(login_url='/service/login')
+def newAppliance(request):
+    form = ApplianceForm()
+    person = None
+    user = request.user
+    msj = ''
+    if request.method == 'POST':
+        form = ApplianceForm(request.POST)
+        if form.is_valid():
+            serial= request.POST.get('serial')
+            trade_mark = request.POST.get('trade_mark')
+            client = Client.objects.filter(user_id=user).first()
+            Appliance(serial=serial, trade_mark=trade_mark, id_client=client).save()
+            return redirect('cms')
+        else:
+            msj='Prueba con otro aparato que no este registrado'
+    user = request.user
+    if has_role(user, 'Client'):
+        person = Client.objects.filter(user_id=user).first()
+    elif has_role(user,'Repairman'):
+        person = Repairman.objects.filter(user_id=user).first()
+    context = {
+        'msj':msj,
+        'person': person,
+        'form': form
+    }
+    return render(request,'cms/new_appliance.html',context)
+
+@login_required(login_url='/service/login')
+def newService(request):
+    user = request.user
+    client = Client.objects.filter(user_id=user).first()
+    group_appliances = Appliance.objects.filter(id_client = client).values_list('id', 'trade_mark')
+    group_repairman = Repairman.objects.all().values_list('id', 'name')
+    form = ServiceForm(appliance_choices=group_appliances, repairman_choices=group_repairman)
+    person = None
+ 
+    if request.method == 'POST':
+        form = ServiceForm(request.POST,appliance_choices=group_appliances, repairman_choices=group_repairman)
+        if form.is_valid():
+            description= request.POST.get('description')
+            date = request.POST.get('date')
+            id_appliance = request.POST.get('appliance')
+            id_repairman = request.POST.get('repairman')
+            appliance = Appliance.objects.filter(id=id_appliance).first()
+            repairman = Repairman.objects.filter(id=id_repairman).first()
+            client = Client.objects.filter(user_id=user).first()
+            Service(description=description, date=date, id_appliance=appliance, id_client=client, id_repairman=repairman).save()
+            return redirect('cms')
+        
+    if has_role(user, 'Client'):
+        person = Client.objects.filter(user_id=user).first()
+    elif has_role(user,'Repairman'):
+        person = Repairman.objects.filter(user_id=user).first()
+    context = {
+        'person': person,
+        'form': form
+    }
+    return render(request,'cms/new_service.html',context)
+
+def logout(request):
+    auth_logout(request)
+    return redirect('login')
 
 def has_role(user, names):
     role_names = names.split(',')
@@ -93,6 +188,7 @@ def has_role(user, names):
         if user.roles.filter(name__in=role_names).exists():
             return True
     return False
+
     
 
 

@@ -1,5 +1,7 @@
 from django import forms
 from django.forms import ValidationError
+from .models import User, Appliance
+from datetime import date
 
 class RegisterForm(forms.Form):
     def __init__(self, *args, rol_choices=(), **kwargs):
@@ -40,6 +42,11 @@ class RegisterForm(forms.Form):
                 'class': 'form-control',
         }
     ))
+    def clean(self):
+        cellphone = self.cleaned_data['cellphone']
+        if User.objects.filter(phone_number=cellphone).exists():
+            raise forms.ValidationError('Looks like email already exists')
+        return cellphone
 
 class LoginForm(forms.Form):
     def __init__(self, *args, **kwargs):
@@ -67,7 +74,7 @@ class LoginForm(forms.Form):
         })) """
 
 class ServiceForm(forms.Form):
-    def __init__(self, *args, appliance_choices=(),repairman_choices=(), **kwargs):
+    def __init__(self, *args, appliance_choices=(), repairman_choices=(), **kwargs):
         super(ServiceForm, self).__init__(*args, **kwargs)
         self.fields['appliance'].choices = appliance_choices
         self.fields['repairman'].choices = repairman_choices
@@ -76,19 +83,20 @@ class ServiceForm(forms.Form):
         widget=forms.TextInput(
             attrs={
                 'class': 'form-control',
+                'data-target': '#datetimepicker1'
             }
         ))
 
-    date = forms.DateField(required=True, label="descripcion",
-        widget=forms.TextInput(
-            attrs={
-                'class': 'form-control',
-            }
-        ))
+    date = forms.DateTimeField(
+        widget=forms.DateTimeInput(attrs={
+            'class': 'form-control',
+            'type': 'date',
+            'min':date.today()
+        }))
 
     appliance = forms.ChoiceField(
         required=True,
-        label="Selecciona tu rol",
+        label="Selecciona tu aparato",
         widget=forms.Select(attrs={
             # 'style': "width: 100%",
             'class': 'form-control',
@@ -96,9 +104,31 @@ class ServiceForm(forms.Form):
     
     repairman = forms.ChoiceField(
         required=True,
-        label="Selecciona tu rol",
+        label="Seleccionar técnico",
         widget=forms.Select(attrs={
             # 'style': "width: 100%",
             'class': 'form-control',
         }))
-        
+
+class ApplianceForm(forms.Form):
+    serial = forms.CharField(required=True, label="Serial",
+        widget=forms.TextInput(
+            attrs={
+                'class': 'form-control ps-0 form-control-line',
+            }
+        ))
+
+    trade_mark = forms.CharField(required=True, label="Tipo y Marca",
+        widget=forms.TextInput(
+            attrs={
+                'class': 'form-control ps-0 form-control-line',
+            }
+        ))
+    def clean(self):
+        serial= self.cleaned_data['serial']
+        if Appliance.objects.filter(serial=serial).exists():
+            raise forms.ValidationError('Looks like email already exists')
+        return serial
+    
+    
+                

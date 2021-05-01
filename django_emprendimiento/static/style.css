@@ -8,3 +8,14 @@
  p{
     font-size: 22px;
  }
+ .up_border{
+   border-top: black 1px outset;
+   padding-top: 12px;
+   margin-top: 12px;
+ }
+ th{
+    color:white!important;
+ }
+ thead {
+   background-color: #009efb;
+ }
